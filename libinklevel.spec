@@ -5,10 +5,10 @@ Version:	0.6.2
 Release:	1
 License:	GPL
 Group:		Libraries
-Source0:	http://home.arcor.de/markusheinz/%{name}-%{version}.tar.gz
+Source0:	http://dl.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 # Source0-md5:	4a86d493b65ae0363d74de4bc7666fb8
 Patch0:		%{name}-build_fixes.patch
-URL:		http://home.arcor.de/markusheinz/libinklevel.html
+URL:		http://libinklevel.sourceforge.net/
 BuildRequires:	libieee1284-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
