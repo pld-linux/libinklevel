@@ -1,12 +1,11 @@
-diff -aurN libinklevel.orig/Makefile libinklevel/Makefile
---- libinklevel.orig/Makefile	2003-12-03 17:43:03.000000000 +0100
-+++ libinklevel/Makefile	2003-12-04 17:10:08.000000000 +0100
+--- libinklevel/Makefile.orig	Wed Dec  3 17:43:03 2003
++++ libinklevel/Makefile	Fri Dec  5 14:27:23 2003
 @@ -1,18 +1,16 @@
 -DESTDIR = /usr/local/
-+#DESTDIR = /usr/local/
++#DESTDIR =
  
 -CFLAGS = -Wall -O -fPIC -DPIC -I$(PWD)
-+CFLAGS = $(OPTFLAGS) -Wall -O -fPIC -DPIC -I$(PWD)
++CFLAGS = $(OPTFLAGS) -Wall -fPIC -DPIC -I.
  
  all: libinklevel.so.2.6 
  
@@ -27,3 +26,11 @@ diff -aurN libinklevel.orig/Makefile libinklevel/Makefile
  
  clean:
  	rm -fr *.o *.so.2.6 *~ 
+@@ -20,5 +18,5 @@
+ libinklevel.o: libinklevel.c inklevel.h
+ 
+ libinklevel.so.2.6: libinklevel.o 
+-	gcc -shared -Wl,-soname,libinklevel.so.2 -o libinklevel.so.2.6 \
+-	libinklevel.o -lc -lieee1284
++	$(CC) -shared -Wl,-soname,libinklevel.so.2 -o libinklevel.so.2.6 \
++	libinklevel.o -lieee1284
