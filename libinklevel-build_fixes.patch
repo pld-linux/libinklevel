@@ -7,7 +7,7 @@ diff -aurN libinklevel.orig/Makefile libinklevel/Makefile
 +LIBDIR=/usr/lib
  
 -CFLAGS = -Wall -O -fPIC -DPIC -I$(PWD)
-+CFLAGS = $(OPTFLAGS) -Wall -fPIC -DPIC -I$(PWD)
++CFLAGS = $(OPTFLAGS) -Wall -fPIC -DPIC -I.
  
  all: libinklevel.so.2.0.6.2
  
