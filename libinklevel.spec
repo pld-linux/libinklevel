@@ -14,12 +14,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Libinklevel is a library for checking the ink level of printer. It
-supports printers attached via parallel port or usb.
+supports printers attached via parallel port or USB.
 
 %description -l pl
 Libinklevel jest bibliotek± wykorzystywan± do sprawdzania poziomu
 atramentu w drukarce. Wspierane s± drukarki pod³±czone za
-po¶rednictwem portu równoleg³ego oraz usb.
+po¶rednictwem portu równoleg³ego oraz USB.
 
 %package devel
 Summary:	Header files for libinklevel
@@ -49,8 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post	-p /sbin/ldconfig
+%postun	-p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
