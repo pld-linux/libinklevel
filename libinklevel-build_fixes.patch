@@ -1,36 +1,37 @@
---- libinklevel/Makefile.orig	Wed Dec  3 17:43:03 2003
-+++ libinklevel/Makefile	Fri Dec  5 14:27:23 2003
-@@ -1,18 +1,16 @@
+diff -aurN libinklevel.orig/Makefile libinklevel/Makefile
+--- libinklevel.orig/Makefile	2004-01-10 17:10:19.000000000 +0100
++++ libinklevel/Makefile	2004-01-13 20:05:02.927828512 +0100
+@@ -1,18 +1,17 @@
 -DESTDIR = /usr/local/
-+#DESTDIR =
++#DESTDIR = /usr/local
  
 -CFLAGS = -Wall -O -fPIC -DPIC -I$(PWD)
-+CFLAGS = $(OPTFLAGS) -Wall -fPIC -DPIC -I.
++CFLAGS = $(OPTFLAGS) -Wall -fPIC -DPIC -I$(PWD)
  
- all: libinklevel.so.2.6 
+ all: libinklevel.so.2.0.6.2
  
  install: all
 -	mkdir -p $(DESTDIR)/include
 -	install -m 644 -o root -g root inklevel.h $(DESTDIR)/include/inklevel.h
 -	mkdir -p $(DESTDIR)/lib
--	install -m 755 -o root -g root libinklevel.so.2.6 \
--	$(DESTDIR)/lib/libinklevel.so.2.6
+-	install -m 755 -o root -g root libinklevel.so.2.0.6.2 \
+-	$(DESTDIR)/lib/libinklevel.so.2.0.6.2
 -	cd $(DESTDIR)/lib && rm -fr libinklevel.so && \
 +	mkdir -p $(DESTDIR)/usr/include
 +	install -c inklevel.h $(DESTDIR)/usr/include/inklevel.h
 +	mkdir -p $(DESTDIR)/usr/lib
-+	install -c libinklevel.so.2.6 $(DESTDIR)/usr/lib/libinklevel.so.2.6
++	install -c libinklevel.so.2.0.6.2 \
++	$(DESTDIR)/usr/lib/libinklevel.so.2.0.6.2
 +	cd $(DESTDIR)/usr/lib && rm -fr libinklevel.so && \
- 	ln -s libinklevel.so.2.6 libinklevel.so
+ 	ln -s libinklevel.so.2.0.6.2 libinklevel.so
 -	ldconfig $(DESTDIR)/lib
  
  clean:
- 	rm -fr *.o *.so.2.6 *~ 
-@@ -20,5 +18,5 @@
+ 	rm -fr *.o *.so.2.0.6.2 *~
+@@ -20,5 +19,5 @@
  libinklevel.o: libinklevel.c inklevel.h
  
- libinklevel.so.2.6: libinklevel.o 
--	gcc -shared -Wl,-soname,libinklevel.so.2 -o libinklevel.so.2.6 \
--	libinklevel.o -lc -lieee1284
-+	$(CC) -shared -Wl,-soname,libinklevel.so.2 -o libinklevel.so.2.6 \
-+	libinklevel.o -lieee1284
+ libinklevel.so.2.0.6.2: libinklevel.o 
+-	gcc -shared -Wl,-soname,libinklevel.so.2 -o libinklevel.so.2.0.6.2 \
++	$(CC) -shared -Wl,-soname,libinklevel.so.2 -o libinklevel.so.2.0.6.2 \
+ 	libinklevel.o -lc -lieee1284
