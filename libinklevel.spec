@@ -9,7 +9,6 @@ Source0:	http://home.arcor.de/markusheinz/%{name}-%{version}.tar.gz
 Patch0:		%{name}-build_fixes.patch
 URL:		http://home.arcor.de/markusheinz/libinklevel.html
 BuildRequires:	libieee1284-devel
-Requires(pre,post):	/sbin/ldconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -40,6 +39,7 @@ Pliki nag³ówkowe dla libinklevel.
 %build
 %{__make} \
 	OPTFLAGS="%{rpmcflags}"
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
