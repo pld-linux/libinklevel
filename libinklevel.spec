@@ -1,12 +1,12 @@
 Summary:	Library for checking ink level of a printer
 Summary(pl):	Biblioteka do sprawdzania poziomu atramentu drukarki
 Name:		libinklevel
-Version:	0.6
+Version:	0.6.1
 Release:	1
 License:	GPL
 Group:		Libraries
 Source0:	http://home.arcor.de/markusheinz/%{name}-%{version}.tar.gz
-# Source0-md5:	0691ec13b0d828f59661a8b60ae04c36
+# Source0-md5:	3f202bf89bf2614a1df536b6b5401a94
 Patch0:		%{name}-build_fixes.patch
 URL:		http://home.arcor.de/markusheinz/libinklevel.html
 BuildRequires:	libieee1284-devel
