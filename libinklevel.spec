@@ -38,8 +38,8 @@ Pliki nag³ówkowe dla libinklevel.
 %patch0 -p1
 
 %build
-%{__make}
-
+%{__make} \
+	OPTFLAGS="%{rpmcflags}"
 %install
 rm -rf $RPM_BUILD_ROOT
 
