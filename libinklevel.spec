@@ -24,7 +24,7 @@ po¶rednictwem portu równoleg³ego oraz USB.
 %package devel
 Summary:	Header files for libinklevel
 Summary(pl):	Pliki nag³ówkowe dla libinklevel
-Group:		Development
+Group:		Development/Libraries
 Requires:	%{name} = %{version}
 
 %description devel
@@ -39,6 +39,7 @@ Pliki nag³ówkowe dla libinklevel.
 
 %build
 %{__make} \
+	CC="%{__cc}" \
 	OPTFLAGS="%{rpmcflags}"
 
 %install
