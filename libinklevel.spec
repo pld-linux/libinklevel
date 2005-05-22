@@ -5,7 +5,7 @@ Version:	0.6.4
 Release:	1
 License:	GPL
 Group:		Libraries
-Source0:	http://dl.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0:	http://dl.sourceforge.net/libinklevel/%{name}-%{version}.tar.gz
 # Source0-md5:	d714c1285387337468f8aa1e0302349d
 Patch0:		%{name}-build_fixes.patch
 URL:		http://libinklevel.sourceforge.net/
