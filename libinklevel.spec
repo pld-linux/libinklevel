@@ -1,5 +1,5 @@
 Summary:	Library for checking ink level of a printer
-Summary(pl):	Biblioteka do sprawdzania poziomu atramentu drukarki
+Summary(pl.UTF-8):   Biblioteka do sprawdzania poziomu atramentu drukarki
 Name:		libinklevel
 Version:	0.6.5
 Release:	1
@@ -18,24 +18,24 @@ supports printers attached via parallel port or USB.
 Supported printers list can be found here:
 http://libinklevel.sourceforge.net/index.html#supported
 
-%description -l pl
-Libinklevel jest bibliotek± wykorzystywan± do sprawdzania poziomu
-atramentu w drukarce. Wspierane s± drukarki pod³±czone za
-po¶rednictwem portu równoleg³ego oraz USB.
-Listê aktualnie obs³ugiwanych drukarek mo¿na znale¼æ tutaj:
+%description -l pl.UTF-8
+Libinklevel jest bibliotekÄ… wykorzystywanÄ… do sprawdzania poziomu
+atramentu w drukarce. Wspierane sÄ… drukarki podÅ‚Ä…czone za
+poÅ›rednictwem portu rÃ³wnolegÅ‚ego oraz USB.
+ListÄ™ aktualnie obsÅ‚ugiwanych drukarek moÅ¼na znaleÅºÄ‡ tutaj:
 http://libinklevel.sourceforge.net/index.html#supported
 
 %package devel
 Summary:	Header files for libinklevel
-Summary(pl):	Pliki nag³ówkowe dla libinklevel
+Summary(pl.UTF-8):   Pliki nagÅ‚Ã³wkowe dla libinklevel
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
 Header files for libinklevel.
 
-%description devel -l pl
-Pliki nag³ówkowe dla libinklevel.
+%description devel -l pl.UTF-8
+Pliki nagÅ‚Ã³wkowe dla libinklevel.
 
 %prep
 %setup -qn %{name}
