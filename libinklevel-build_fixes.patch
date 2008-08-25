@@ -1,30 +1,26 @@
---- libinklevel-0.7.2/Makefile.orig	2007-07-28 21:01:36.000000000 +0200
-+++ libinklevel-0.7.2/Makefile	2007-08-12 09:39:49.560052834 +0200
-@@ -1,18 +1,20 @@
+--- libinklevel-0.7.3/Makefile.orig	2008-01-07 20:51:46.000000000 +0100
++++ libinklevel-0.7.3/Makefile	2008-08-25 21:11:00.086119225 +0200
+@@ -1,6 +1,8 @@
  DESTDIR = 
  PREFIX = /usr/local
--CFLAGS = -Wall -O2 -fPIC -DPIC -I.
+-CFLAGS += -Wall -O2 -fPIC -DPIC -I.
 +LIBDIR = $(PREFIX)/lib
 +OPTFLAGS = -O2
-+CFLAGS = $(OPTFLAGS) -Wall -fPIC -DPIC -I.
++CFLAGS += -Wall $(OPTFLAGS) -fPIC -DPIC -I.
  CC = gcc
  
- all: libinklevel.so.4.0.7.2
- 
- install: all
--	install -D -m 644 -o root -g root inklevel.h \
--		$(DESTDIR)/$(PREFIX)/include/inklevel.h
--	install -D -m 644 -o root -g root libinklevel.so.4.0.7.2 \
--		$(DESTDIR)/$(PREFIX)/lib/libinklevel.so.4.0.7.2
+ all: libinklevel.so.4.0.7.3
+@@ -9,10 +11,10 @@
+ 	install -D -m 644 inklevel.h \
+ 		$(DESTDIR)/$(PREFIX)/include/inklevel.h
+ 	install -D -m 644 libinklevel.so.4.0.7.3 \
+-		$(DESTDIR)/$(PREFIX)/lib/libinklevel.so.4.0.7.3
 -	cd $(DESTDIR)/$(PREFIX)/lib && rm -fr libinklevel.so && \
-+	install -D -m 644 inklevel.h \
-+		$(DESTDIR)$(PREFIX)/include/inklevel.h
-+	install -D -m 644 libinklevel.so.4.0.7.2 \
-+		$(DESTDIR)$(LIBDIR)/libinklevel.so.4.0.7.2
-+	cd $(DESTDIR)$(LIBDIR) && rm -fr libinklevel.so && \
- 		ln -s libinklevel.so.4.0.7.2 libinklevel.so 
++		$(DESTDIR)/$(LIBDIR)/libinklevel.so.4.0.7.3
++	cd $(DESTDIR)/$(LIBDIR) && rm -fr libinklevel.so && \
+ 		ln -s libinklevel.so.4.0.7.3 libinklevel.so 
 -	cd $(DESTDIR)/$(PREFIX)/lib && rm -fr libinklevel.so.4 && \
-+	cd $(DESTDIR)$(LIBDIR) && rm -fr libinklevel.so.4 && \
- 		ln -s libinklevel.so.4.0.7.2 libinklevel.so.4
++	cd $(DESTDIR)/$(LIBDIR) && rm -fr libinklevel.so.4 && \
+ 		ln -s libinklevel.so.4.0.7.3 libinklevel.so.4
  
  clean:
