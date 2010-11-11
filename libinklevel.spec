@@ -1,13 +1,12 @@
 Summary:	Library for checking ink level of a printer
 Summary(pl.UTF-8):	Biblioteka do sprawdzania poziomu atramentu drukarki
 Name:		libinklevel
-Version:	0.7.3
+Version:	0.8.0
 Release:	1
 License:	GPL
 Group:		Libraries
-Source0:	http://dl.sourceforge.net/libinklevel/%{name}-%{version}.tar.gz
-# Source0-md5:	c7ccefec29d1d218d1aae240f6044fe1
-Patch0:		%{name}-build_fixes.patch
+Source0:	http://downloads.sourceforge.net/libinklevel/%{name}-%{version}.tar.gz
+# Source0-md5:	83464cb23fe46a1d1adbe10f08b247be
 URL:		http://libinklevel.sourceforge.net/
 BuildRequires:	libieee1284-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -26,33 +25,42 @@ Listę aktualnie obsługiwanych drukarek można znaleźć tutaj:
 http://libinklevel.sourceforge.net/index.html#supported
 
 %package devel
-Summary:	Header files for libinklevel
-Summary(pl.UTF-8):	Pliki nagłówkowe dla libinklevel
+Summary:	Header file for libinklevel
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki libinklevel
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	libieee1284-devel
 
 %description devel
-Header files for libinklevel.
+Header file for libinklevel.
 
 %description devel -l pl.UTF-8
-Pliki nagłówkowe dla libinklevel.
+Plik nagłówkowy biblioteki libinklevel.
+
+%package static
+Summary:	Static libinklevel library
+Summary(pl.UTF-8):	Statyczna biblioteka libinklevel
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static libinklevel library.
+
+%description static -l pl.UTF-8
+Statyczna biblioteka libinklevel.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
-%{__make} \
-	CC="%{__cc}" \
-	OPTFLAGS="%{rpmcflags}"
+%configure
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT \
-	PREFIX=%{_prefix} \
-	LIBDIR=%{_libdir}
+	DESTDIR=$RPM_BUILD_ROOT
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -62,11 +70,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS CHANGELOG README
-%attr(755,root,root) %{_libdir}/libinklevel.so.*.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libinklevel.so.4
+%doc AUTHORS ChangeLog NEWS README
+%attr(755,root,root) %{_libdir}/libinklevel.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libinklevel.so.5
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libinklevel.so
+%{_libdir}/libinklevel.la
 %{_includedir}/inklevel.h
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libinklevel.a
