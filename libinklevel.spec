@@ -1,16 +1,25 @@
+#
+# Conditional build:
+%bcond_without	parport	# parallel port (IEEE 1284) support
+
 Summary:	Library for checking ink level of a printer
 Summary(pl.UTF-8):	Biblioteka do sprawdzania poziomu atramentu drukarki
 Name:		libinklevel
-Version:	0.9.2
+Version:	0.9.3
 Release:	1
 License:	GPL v2
 Group:		Libraries
 Source0:	http://downloads.sourceforge.net/libinklevel/%{name}-%{version}.tar.gz
-# Source0-md5:	d9f61d14afc2025da454a624578b2be8
+# Source0-md5:	572eda08cc561414673fd798b6c7bc2a
+Patch0:		%{name}-parport.patch
 URL:		http://libinklevel.sourceforge.net/
-BuildRequires:	libieee1284-devel
-BuildRequires:	libusb-devel >= 1.0
+BuildRequires:	autoconf >= 2.50
+BuildRequires:	automake
+%{?with_parport:BuildRequires:	libieee1284-devel}
+BuildRequires:	libtool
+BuildRequires:	libusb-devel >= 1.0.17
 BuildRequires:	pkgconfig >= 1:0.26
+Requires:	libusb >= 1.0.17
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -31,7 +40,7 @@ Summary:	Header file for libinklevel
 Summary(pl.UTF-8):	Plik nagłówkowy biblioteki libinklevel
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	libieee1284-devel
+%{?with_parport:Requires:	libieee1284-devel}
 Requires:	libusb-devel >= 1.0
 
 %description devel
@@ -54,8 +63,16 @@ Statyczna biblioteka libinklevel.
 
 %prep
 %setup -q
+%if %{with parport}
+%patch0 -p1
+%endif
 
 %build
+%{__libtoolize}
+%{__aclocal} -I m4
+%{__autoconf}
+%{__autoheader}
+%{__automake}
 %configure
 %{__make}
 

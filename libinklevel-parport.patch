@@ -1,0 +1,345 @@
+diff -Nur libinklevel-0.9.3.orig/configure.ac libinklevel-0.9.3/configure.ac
+--- libinklevel-0.9.3.orig/configure.ac	2018-07-07 22:11:02.000000000 +0200
++++ libinklevel-0.9.3/configure.ac	2018-08-31 21:00:17.518513013 +0200
+@@ -73,7 +73,7 @@
+ esac
+ 
+ ## Check for optional  header files
+-AC_CHECK_HEADERS([ifaddrs.h])
++AC_CHECK_HEADERS([ifaddrs.h ieee1284.h])
+ 
+ ## Check for mandatory header files
+ 
+@@ -110,6 +110,9 @@
+ AC_DEFINE_UNQUOTED(LINUX,1,[Define value for Linux OS])
+ case $host in
+   *-*-linux*) AC_DEFINE_UNQUOTED(HOST_OS,LINUX,[Host OS])
++  	      AC_CHECK_HEADERS([ieee1284.h],,
++				AC_MSG_ERROR(( required header file ieee1284.h missing)))
++  	      AC_CHECK_LIB([ieee1284],ieee1284_open,, AC_MSG_ERROR(Library not found),)
+ 	      ## check for pkgconfig
+ 	      PKG_PROG_PKG_CONFIG([0.26])
+ 
+diff -Nur libinklevel-0.9.3.orig/devices.c libinklevel-0.9.3/devices.c
+--- libinklevel-0.9.3.orig/devices.c	2018-07-07 21:39:26.000000000 +0200
++++ libinklevel-0.9.3/devices.c	2018-08-31 21:05:47.711842557 +0200
+@@ -21,11 +21,69 @@
+ #include "devices.h"
+ #include "bjnp.h"
+ #include "libusb-utils.h"
++#undef HAVE_IEEE1284_H
++#include <ieee1284.h>
+ 
+ int get_device_id(const int port, const char *device_file, 
+                   const int portnumber, char *device_id) {
++  struct parport_list parports;
++
++  char tmp[BUFLEN];
++  char device_file1[256];
++  int size;
++  int fd;
+   int result = COULD_NOT_GET_DEVICE_ID;
+ 
++  if (port == PARPORT ) {
++    /* check if we have appropriate permissions */
++
++#if (HOST_OS == LINUX)
++
++    sprintf(device_file1, "/dev/parport%d", portnumber);
++
++    if ((fd = open(device_file1, O_RDWR)) < 0) {
++      return DEV_PARPORT_INACCESSIBLE;
++    }
++
++    close(fd);
++
++    sprintf(device_file1, "/dev/lp%d", portnumber);
++    
++    if ((fd = open(device_file1, O_RDWR)) < 0) {
++      return DEV_LP_INACCESSIBLE;
++    }
++
++    close(fd);
++
++#elif (HOST_OS == FREEBSD)
++
++    sprintf(device_file1, "/dev/lpt%d", portnumber);
++    
++    if ((fd = open(device_file1, O_RDWR)) < 0) {
++      return DEV_LP_INACCESSIBLE;
++    }
++
++    close(fd);
++
++#endif
++
++    /* for linux and freebsd use libieee1284 to get the device id from 
++       parallel port */
++
++    if (ieee1284_find_ports(&parports, 0) == E1284_OK) {
++      if (portnumber < parports.portc) {
++	size = ieee1284_get_deviceid(parports.portv[portnumber], -1, 
++                                     F1284_FRESH, tmp, BUFLEN);
++	if (size >= 2) {
++	  strncpy(device_id, tmp + 2, size - 2);
++	  return OK;
++	}
++      }
++    }
++
++    return COULD_NOT_GET_DEVICE_ID;
++
++  } else
+   if (port == USB) {
+     libusb_context *ctx = NULL;
+     usb_printer *printer = NULL;
+@@ -62,3 +120,50 @@
+     return UNKNOWN_PORT_SPECIFIED;
+   }
+ }
++
++int open_printer_device(const int port, const char *custom_device_file,
++                        const int portnumber) {
++  char device_file[256];
++  int fd;
++
++#if (HOST_OS == LINUX)
++
++  if (port == PARPORT) {
++    sprintf(device_file, "/dev/lp%d", portnumber);
++  } else {
++    return UNKNOWN_PORT_SPECIFIED;
++  }
++
++#elif (HOST_OS == FREEBSD) 
++
++  if (port == PARPORT) {
++    sprintf(device_file, "/dev/lpt%d", portnumber);
++  } else {
++    return UNKNOWN_PORT_SPECIFIED;
++  }
++
++#endif
++
++#ifdef DEBUG
++  printf("Device file: %s\n", device_file);
++#endif
++
++  fd = open(device_file, O_RDWR);
++
++  if (fd == -1) {
++
++#ifdef DEBUG
++    printf("Could not open %s\n", device_file);
++#endif
++  }
++  
++  if (fd == -1) {
++    if (port == USB) {
++      return DEV_USB_LP_INACCESSIBLE;
++    } else {
++      return DEV_LP_INACCESSIBLE;
++    }
++  } else {
++    return fd;
++  }
++}
+diff -Nur libinklevel-0.9.3.orig/devices.h libinklevel-0.9.3/devices.h
+--- libinklevel-0.9.3.orig/devices.h	2018-07-07 21:19:56.000000000 +0200
++++ libinklevel-0.9.3/devices.h	2018-08-31 21:06:00.905175737 +0200
+@@ -11,4 +11,7 @@
+ 
+ int get_device_id(const int port, const char *device_file, 
+ 		  const int portnumber, char *device_id);
++int open_printer_device(const int port, const char* device_file, 
++                        const int portnumber);
++
+ #endif
+diff -Nur libinklevel-0.9.3.orig/inklevel.h libinklevel-0.9.3/inklevel.h
+--- libinklevel-0.9.3.orig/inklevel.h	2018-07-07 21:27:08.000000000 +0200
++++ libinklevel-0.9.3/inklevel.h	2018-08-31 21:06:39.291841881 +0200
+@@ -13,6 +13,7 @@
+ 
+ /* Values for port */
+ 
++#define PARPORT 1
+ #define USB 2
+ #define BJNP 5
+ #define CUSTOM_BJNP 6
+diff -Nur libinklevel-0.9.3.orig/printer-io.c libinklevel-0.9.3/printer-io.c
+--- libinklevel-0.9.3.orig/printer-io.c	2018-07-07 21:47:21.000000000 +0200
++++ libinklevel-0.9.3/printer-io.c	2018-08-31 21:18:21.511833949 +0200
+@@ -55,7 +55,19 @@
+       }
+     }
+   }
+-  
++  else {
++
++    int fd = open_printer_device(desc->port, desc->device_file, 
++				 desc->portnumber);
++    if (fd < 0) {
++      return PRINTER_FAILURE;
++    } else {
++      desc->fd = fd;
++      return PRINTER_SUCCESS;
++    }   
++
++  }
++
+   return PRINTER_FAILURE;
+ }
+ 
+@@ -89,8 +101,24 @@
+       return PRINTER_FAILURE;
+     }
+   }
++  else {
++    if (desc->fd >= 0) {
++      int result = close(desc->fd);
+ 
+-  return PRINTER_FAILURE;
++      if (result == 0) {
++	return PRINTER_SUCCESS;
++      } else {
++	return PRINTER_FAILURE;
++      }
++
++    } else {
++#ifdef DEBUG
++      printf("printer file descriptor is invalid\n");
++#endif
++
++      return PRINTER_FAILURE;
++    }
++  }
+ }
+ 
+ /*
+@@ -105,7 +133,8 @@
+ int read_wrapper(printer_descriptor *desc, char *buffer, 
+ 		 size_t bufsize, int *transfered, int nonblocking) {
+ 
+-  if (desc->mode == PRINTER_MODE_LIBUSB && desc->printer != NULL) {
++  if (desc->mode == PRINTER_MODE_LIBUSB) {
++  if (desc->printer != NULL) {
+     int result = bulk_transfer(desc->printer->handle, 
+                                desc->printer->read_endp, buffer, bufsize, 
+                                transfered);
+@@ -114,8 +143,22 @@
+       return PRINTER_SUCCESS;
+     }
+   }
+-
+-  return PRINTER_FAILURE;
++  else
++    return PRINTER_FAILURE;
++  } else {
++    if (desc->fd >= 0) {
++      int result = read_from_printer(desc->fd, buffer, bufsize, nonblocking); 
++
++      if (result > 0) {
++        *transfered = result;
++        return PRINTER_SUCCESS;
++      } else {
++        return PRINTER_FAILURE;
++      }
++    } else {
++      return PRINTER_FAILURE;
++    }
++  }
+ }
+ 
+ /* 
+@@ -127,7 +170,8 @@
+  */
+ int write_wrapper(printer_descriptor *desc, char *buffer, 
+ 		  size_t bufsize, int *transfered) {
+-  if (desc->mode == PRINTER_MODE_LIBUSB && desc->printer != NULL) {
++  if (desc->mode == PRINTER_MODE_LIBUSB) {
++  if (desc->printer != NULL) {
+     int result = bulk_transfer(desc->printer->handle, 
+                                desc->printer->write_endp, buffer, bufsize, 
+                                transfered);
+@@ -136,6 +180,20 @@
+       return PRINTER_SUCCESS;
+     }
+   }
+-  
+-  return PRINTER_FAILURE;
++  } else {
++    if (desc->fd >= 0) {
++      int count = write(desc->fd, buffer, bufsize);
++
++      if (count >= 0) {
++        *transfered = count;
++      }
++      if (count == bufsize) {
++        return PRINTER_SUCCESS;
++      } else {
++        return PRINTER_FAILURE;
++      }
++    } else {
++      return PRINTER_FAILURE;
++    }
++  }
+ }
+diff -Nur libinklevel-0.9.3.orig/util.c libinklevel-0.9.3/util.c
+--- libinklevel-0.9.3.orig/util.c	2018-07-07 21:37:24.000000000 +0200
++++ libinklevel-0.9.3/util.c	2018-08-31 21:19:11.708500022 +0200
+@@ -19,6 +19,44 @@
+ #include "inklevel.h"
+ #include "util.h"
+ 
++/* This function reads from the printer nonblockingly */
++int read_from_printer(int fd, void *buf, size_t bufsize, int nonblocking) {
++  int status;
++  int retry = 10;
++  struct pollfd ufds;
++
++  memset(buf, 0, bufsize);
++
++  if (nonblocking != 0) {
++    fcntl(fd, F_SETFL, O_NONBLOCK | fcntl(fd, F_GETFL));
++  }
++
++  do {
++    ufds.fd = fd;
++    ufds.events = POLLIN;
++    ufds.revents = 0;
++    if ((status = poll(&ufds, 1, 1000)) < 0) {
++      break;
++    }
++    status = read(fd, buf, bufsize - 1);
++    if ((status == 0) || ((status < 0) && (errno == EAGAIN))) {
++      usleep(2000);
++      status = 0;
++    }
++  } while ((status == 0) && (--retry != 0));
++
++#ifdef DEBUG
++  if ((status == 0) && (retry == 0)) {
++    printf("Read from printer timed out\n");
++  } else if (status < 0) {
++    printf("Could not read from printer\n");
++  }
++#endif
++
++  return status;
++}
++
++
+ /* This function converts a string containing a two digit hexadecimal number
+  * to an int 
+  */
+diff -Nur libinklevel-0.9.3.orig/util.h libinklevel-0.9.3/util.h
+--- libinklevel-0.9.3.orig/util.h	2018-07-07 22:02:45.000000000 +0200
++++ libinklevel-0.9.3/util.h	2018-08-31 21:19:21.041833273 +0200
+@@ -12,6 +12,7 @@
+ #include "internal.h"
+ #include "inklevel.h"
+ 
++int read_from_printer(int fd, void *buf, size_t bufsize, int nonblocking);
+ int my_axtoi(char *t);
+ int my_atoi(char *t);
+ void tokenize_device_id(const char *string, char tags[NR_TAGS][BUFLEN]);
