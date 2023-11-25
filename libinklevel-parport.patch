@@ -20,9 +20,8 @@ diff -Nur libinklevel-0.9.3.orig/configure.ac libinklevel-0.9.3/configure.ac
  	      ## check for pkgconfig
  	      PKG_PROG_PKG_CONFIG([0.26])
  
-diff -Nur libinklevel-0.9.3.orig/devices.c libinklevel-0.9.3/devices.c
---- libinklevel-0.9.3.orig/devices.c	2018-07-07 21:39:26.000000000 +0200
-+++ libinklevel-0.9.3/devices.c	2018-08-31 21:05:47.711842557 +0200
+--- libinklevel-0.9.5/devices.c.orig	2022-05-28 22:18:42.000000000 +0200
++++ libinklevel-0.9.5/devices.c	2023-11-25 20:40:40.725233723 +0100
 @@ -21,11 +21,69 @@
  #include "devices.h"
  #include "bjnp.h"
@@ -91,9 +90,9 @@ diff -Nur libinklevel-0.9.3.orig/devices.c libinklevel-0.9.3/devices.c
 +
 +  } else
    if (port == USB) {
-     libusb_context *ctx = NULL;
      usb_printer *printer = NULL;
-@@ -62,3 +120,50 @@
+ 
+@@ -61,3 +119,50 @@ int get_device_id(const int port, const
      return UNKNOWN_PORT_SPECIFIED;
    }
  }

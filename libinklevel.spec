@@ -5,35 +5,36 @@
 Summary:	Library for checking ink level of a printer
 Summary(pl.UTF-8):	Biblioteka do sprawdzania poziomu atramentu drukarki
 Name:		libinklevel
-Version:	0.9.3
+Version:	0.9.5
 Release:	1
 License:	GPL v2
 Group:		Libraries
-Source0:	http://downloads.sourceforge.net/libinklevel/%{name}-%{version}.tar.gz
-# Source0-md5:	572eda08cc561414673fd798b6c7bc2a
+Source0:	https://downloads.sourceforge.net/libinklevel/%{name}-%{version}.tar.gz
+# Source0-md5:	d08678cdc060fcc0e7c65b3645d03821
 Patch0:		%{name}-parport.patch
-URL:		http://libinklevel.sourceforge.net/
+URL:		https://libinklevel.sourceforge.net/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 %{?with_parport:BuildRequires:	libieee1284-devel}
 BuildRequires:	libtool
-BuildRequires:	libusb-devel >= 1.0.17
+BuildRequires:	libusb-devel >= 1.0.22
+BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	pkgconfig >= 1:0.26
-Requires:	libusb >= 1.0.17
+Requires:	libusb >= 1.0.22
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Libinklevel is a library for checking the ink level of printer. It
 supports printers attached via parallel port or USB.
 Supported printers list can be found here:
-http://libinklevel.sourceforge.net/index.html#supported
+https://libinklevel.sourceforge.net/index.html#supported
 
 %description -l pl.UTF-8
 Libinklevel jest biblioteką wykorzystywaną do sprawdzania poziomu
 atramentu w drukarce. Wspierane są drukarki podłączone za
 pośrednictwem portu równoległego oraz USB.
 Listę aktualnie obsługiwanych drukarek można znaleźć tutaj:
-http://libinklevel.sourceforge.net/index.html#supported
+https://libinklevel.sourceforge.net/index.html#supported
 
 %package devel
 Summary:	Header file for libinklevel
