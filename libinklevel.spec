@@ -65,7 +65,7 @@ Statyczna biblioteka libinklevel.
 %prep
 %setup -q
 %if %{with parport}
-%patch0 -p1
+%patch -P0 -p1
 %endif
 
 %build
