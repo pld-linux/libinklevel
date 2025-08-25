@@ -1,0 +1,11 @@
+--- libinklevel-0.9.7/bjnp-debug.c~	2023-01-11 22:32:06.000000000 +0100
++++ libinklevel-0.9.7/bjnp-debug.c	2025-08-25 10:53:19.655285960 +0200
+@@ -67,7 +67,7 @@ void bjnp_get_time (time_t * sec, uint32
+ bjnp_loglevel_t str2level (char *level);
+ char * level2str (bjnp_loglevel_t level);
+ 
+-#ifndef NDEBUG
++#if 1
+ 
+ static void
+ u8tohex (uint8_t x, char *str)
